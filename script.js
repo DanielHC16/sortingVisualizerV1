@@ -1,4 +1,4 @@
-const n = 10;
+const n = 40;
 const array = [];
 
 init();
@@ -12,21 +12,37 @@ function init(){
 }
 
 function play(){
-    bubbleSort(array);
+    const copy=[...array];
+    const swaps = bubbleSort(copy);
+    animate(swaps);
+}
+
+function animate(swaps){
+    if(swaps.length == 0){
+        return;
+    }
+    const [i, j] = swaps.shift();
+    [array[i], array[j]] = [array[j], array[i]];
     showBars();
+    setTimeout(function(){
+            animate(swaps);
+    }, 50);
 }
 
 
 function bubbleSort(array){
+    const swaps=[];
     do{
         var swapped = false;
         for(let i=1; i<array.length;i++){
             if(array[i-1]>array[i]){
                 swapped = true;
+                swaps.push([i-1,i]);
                 [array[i-1], array[i]] = [array[i], array[i-1]];
             }
         }
     } while(swapped);
+    return swaps;
 }
 
 
