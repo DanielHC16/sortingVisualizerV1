@@ -1,7 +1,32 @@
-const n = 12;
+const n = 20;
 const array = [];
+const speed = 100;
 
 init();
+
+let audioCtx = null;
+
+function playNote(freq){
+    if(audioCtx == null){
+            audioCtx = new(
+            AudioContext || 
+            webkitAudioContext ||
+            window.webkitAudioContext
+        )();
+    }
+    const dur = 0.1;
+    const osc = audioCtx.createOscillator();
+    osc.frequency.value = freq;
+    osc.start();
+    osc.stop(audioCtx.currentTime+dur);
+    const node = audioCtx.createGain();
+    node.gain.value = 0.1;
+    node.gain.linearRampToValueAtTime(
+        0, audioCtx.currentTime+dur
+    );
+    osc.connect(node);
+    node.connect(audioCtx.destination);
+}
 
 function init(){
 
@@ -29,11 +54,13 @@ function animate(moves){
     [array[i], array[j]] = [array[j], array[i]];
     }
 
+    playNote(200+array[i]*500);
+    playNote(200+array[j]*500);
 
     showBars(move);
     setTimeout(function(){
             animate(moves);
-    }, 250);
+    }, speed);
 }
 
 
@@ -63,7 +90,7 @@ function showBars(move){
 
         if(move && move.indices.includes(i)){
             bar.style.backgroundColor=
-            move.type=="swap"?"green":"yellow"; // if move swap == green, else == yellow
+            move.type=="swap"?"yellow":"green"; // if move swap == green, else == yellow
         }
 
         container.appendChild(bar);
